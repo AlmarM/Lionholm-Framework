@@ -68,8 +68,13 @@
         <Compile Include="Source\Core\Serialization\ICompoundImporter.cs" />
         <Compile Include="Source\Core\Serialization\ISerializable.cs" />
         <Compile Include="Source\Core\Serialization\ISerializer.cs" />
-        <Compile Include="Source\Core\Serialization\JsonCompoundDataReader.cs" />
-        <Compile Include="Source\Core\Serialization\JsonCompoundDataWriter.cs" />
+        <Compile Include="Source\Core\Serialization\JSON\IJsonObjectReader.cs" />
+        <Compile Include="Source\Core\Serialization\JSON\IJsonObjectWriter.cs" />
+        <Compile Include="Source\Core\Serialization\JSON\JsonArrayReader.cs" />
+        <Compile Include="Source\Core\Serialization\JSON\JsonCompoundDataReader.cs" />
+        <Compile Include="Source\Core\Serialization\JSON\JsonCompoundDataWriter.cs" />
+        <Compile Include="Source\Core\Serialization\JSON\JsonEnumerableWriter.cs" />
+        <Compile Include="Source\Core\Serialization\JSON\JsonPrimitiveReader.cs" />
         <Compile Include="Source\Core\Serialization\KeyValueCompound.cs" />
         <Compile Include="Source\Core\Serialization\Serializer.cs" />
         <Compile Include="Source\Core\Utils\ReflectionUtils.cs" />

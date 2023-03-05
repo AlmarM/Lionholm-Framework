@@ -6,6 +6,11 @@ using Lionholm.Core.Utils;
 
 namespace Lionholm.Core.DI
 {
+    /// <summary>
+    /// TODO
+    /// - Add support for constructor dependencies
+    /// - Check for circular constructor dependencies
+    /// </summary>
     public class DependencyContainer
     {
         private readonly List<BindInfo> _unresolvedBinds;
@@ -31,7 +36,7 @@ namespace Lionholm.Core.DI
 
         public void Inject(object instance)
         {
-            FieldInfo[] dependencies = ReflectionUtils.GetFieldsWithAttribute<DependencyAttribute>(instance.GetType());
+            IEnumerable<FieldInfo> dependencies = ReflectionUtils.GetFieldsWithAttribute<DependencyAttribute>(instance.GetType());
 
             foreach (FieldInfo dependency in dependencies)
             {

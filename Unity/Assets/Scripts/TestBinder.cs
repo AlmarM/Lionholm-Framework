@@ -1,7 +1,8 @@
 using System;
+using System.Linq;
 using Lionholm.Core.DI;
 using Lionholm.Core.Serialization;
-using Lionholm.Core.Serialization.Files;
+using Lionholm.Core.Serialization.JSON;
 using Lionholm.Unity.DI;
 
 public class TestBinder : MonoBinder
@@ -9,13 +10,10 @@ public class TestBinder : MonoBinder
     public override void Bind()
     {
         Container.BindSelf<Game>();
-        Container.Bind<IFileCompoundExporter>().To<JsonCompoundExporter>();
     }
 
     public class Game : IBindsResolvedHandler
     {
-        [Dependency] private IFileCompoundExporter _compoundExporter;
-
         public void OnBindsResolved()
         {
             var one = new KeyValueCompound();
@@ -32,7 +30,11 @@ public class TestBinder : MonoBinder
             three.Write("two", two);
             three.Write("lelele", 334342342663);
 
-            _compoundExporter.Export(@"E:\", "testfile", three);
+            var a = new JsonCompoundDataWriter();
+            string json = a.Write(three);
+
+            var b = new JsonCompoundDataReader();
+            KeyValueCompound compound = b.Read(json);
         }
     }
 }

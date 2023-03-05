@@ -1,17 +1,20 @@
 using System.IO;
-using Lionholm.Core.DI;
 
 namespace Lionholm.Core.Serialization.Files
 {
     public class FileCompoundExporter : IFileCompoundExporter
     {
-        [field: Dependency] public ICompoundDataWriter DataWriter { get; set; }
-
+        private readonly ICompoundDataWriter _compoundDataWriter;
         private string _path;
+
+        public FileCompoundExporter(ICompoundDataWriter compoundDataWriter)
+        {
+            _compoundDataWriter = compoundDataWriter;
+        }
 
         public virtual void Export(KeyValueCompound compound)
         {
-            string data = DataWriter.Write(compound);
+            string data = _compoundDataWriter.Write(compound);
 
             WriteFile(data);
             ClearCache();
