@@ -21,10 +21,7 @@ namespace Lionholm.Core.Serialization.JSON
 
         static JsonCompoundDataWriter()
         {
-            _jsonObjectWriters = ReflectionUtils.GetSubTypes(typeof(IJsonObjectWriter))
-                .Select(Activator.CreateInstance)
-                .Cast<IJsonObjectWriter>()
-                .ToArray();
+            _jsonObjectWriters = TypeUtils.CreateAllSubTypes<IJsonObjectWriter>().ToArray();
         }
 
         public string Write(KeyValueCompound compound)

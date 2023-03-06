@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using Lionholm.Core.Utils;
@@ -18,10 +17,7 @@ namespace Lionholm.Core.Serialization.JSON
 
         static JsonCompoundDataReader()
         {
-            _jsonObjectReaders = ReflectionUtils.GetSubTypes(typeof(IJsonObjectReader))
-                .Select(Activator.CreateInstance)
-                .Cast<IJsonObjectReader>()
-                .ToArray();
+            _jsonObjectReaders = TypeUtils.CreateAllSubTypes<IJsonObjectReader>().ToArray();
         }
 
         public KeyValueCompound Read(string input)
