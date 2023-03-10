@@ -4,12 +4,12 @@ namespace Lionholm.Core.DI
     {
         public DependencyContainer Container { get; private set; }
 
-        public DiRoot(IBinder[] rootBinders)
+        public DiRoot(ITypeBinder[] rootBinders)
         {
             PerformDependencyInjection(rootBinders);
         }
 
-        private void PerformDependencyInjection(IBinder[] rootBinders)
+        private void PerformDependencyInjection(ITypeBinder[] rootBinders)
         {
             Initialize();
             CreateBindingInfo(rootBinders);
@@ -21,18 +21,18 @@ namespace Lionholm.Core.DI
             Container = new DependencyContainer();
         }
 
-        private void CreateBindingInfo(params IBinder[] rootBinders)
+        private void CreateBindingInfo(params ITypeBinder[] rootBinders)
         {
-            foreach (IBinder binder in rootBinders)
-            {
-                binder.Container = Container;
-                binder.Bind();
-            }
+            // foreach (ITypeBinder binder in rootBinders)
+            // {
+            //     binder.Container = Container;
+            //     binder.Bind();
+            // }
         }
 
         private void InjectDependencies()
         {
-            Container.InjectUnresolvedBinds();
+            //Container.InjectUnresolvedBinds();
         }
     }
 }

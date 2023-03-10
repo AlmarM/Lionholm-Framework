@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Lionholm.Unity.DI
 {
-    public abstract class MonoBinder : MonoBehaviour, IBinder
+    public abstract class MonoTypeBinder : MonoBehaviour, ITypeBinder
     {
         public DependencyContainer Container { get; set; }
 

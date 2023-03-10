@@ -7,13 +7,13 @@ namespace Lionholm.Unity.DI
 {
     public class MonoDiRoot : MonoBehaviour
     {
-        [SerializeField] private MonoBinder[] _rootBinders = Array.Empty<MonoBinder>();
+        [SerializeField] private MonoTypeBinder[] _rootBinders = Array.Empty<MonoTypeBinder>();
 
         private DiRoot _diRoot;
 
         private void Awake()
         {
-            _diRoot = new DiRoot(_rootBinders.ToArray<IBinder>());
+            _diRoot = new DiRoot(_rootBinders.ToArray<ITypeBinder>());
         }
     }
 }

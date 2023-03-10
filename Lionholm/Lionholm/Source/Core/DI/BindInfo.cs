@@ -4,29 +4,30 @@ namespace Lionholm.Core.DI
 {
     public class BindInfo
     {
-        public Type SourceType { get; private set; }
+        public TypeConstraint TypeConstraint { get; private set; }
 
-        public Type TargetType { get; private set; }
+        public Type TargetType { get; }
 
         public InstanceType InstanceType { get; private set; }
 
-        public bool IsLazy { get; private set; }
-
-        public BindInfo(Type type)
+        public BindInfo(Type targetType)
         {
-            SourceType = type;
+            TargetType = targetType;
         }
 
-        public BindInfo To(Type type)
-        {
-            TargetType = type;
+        public BindInfo To<T1, T2>() => To(typeof(T1), typeof(T2));
 
-            return this;
-        }
+        public BindInfo To<T1, T2, T3>() => To(typeof(T1), typeof(T2), typeof(T3));
 
-        public BindInfo To<T>()
+        public BindInfo To<T1, T2, T3, T4>() => To(typeof(T1), typeof(T2), typeof(T3), typeof(T4));
+
+        public BindInfo To<T>() => To(typeof(T));
+
+        public BindInfo To(Type sourceType) => To(new[] { sourceType });
+
+        public BindInfo To(params Type[] sourceTypes)
         {
-            To(typeof(T));
+            TypeConstraint = TypeConstraint.From(sourceTypes);
 
             return this;
         }
@@ -41,13 +42,6 @@ namespace Lionholm.Core.DI
         public BindInfo AsNew()
         {
             InstanceType = InstanceType.NewInstance;
-
-            return this;
-        }
-
-        public BindInfo Lazy()
-        {
-            IsLazy = true;
 
             return this;
         }
