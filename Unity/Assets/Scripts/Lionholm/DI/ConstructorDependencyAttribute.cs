@@ -1,6 +1,6 @@
 using System;
 
-namespace Lionholm.Core.DI
+namespace Lionholm.DI
 {
     public class ConstructorDependencyAttribute : Attribute
     {

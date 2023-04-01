@@ -1,5 +1,5 @@
-using Lionholm.Core.DI;
-using Lionholm.Unity.DI;
+using Lionholm.DI;
+using Lionholm.DI.Unity;
 
 namespace DefaultNamespace
 {
@@ -15,33 +15,6 @@ namespace DefaultNamespace
     {
         public override void Bind()
         {
-            Binds.AssignSelf<Person>();
-            Binds.LazyAssign<Apple>().To<IFruit>();
         }
-    }
-
-    public class Person : IInjectionCompleteHandler
-    {
-        private IFruit _fruit;
-
-        [Dependency] private DependencyContainer _container;
-
-        public Person(IFruit fruit)
-        {
-            _fruit = fruit;
-        }
-
-        public void OnInjectionComplete()
-        {
-            int a;
-        }
-    }
-
-    public interface IFruit
-    {
-    }
-
-    public class Apple : IFruit
-    {
     }
 }

@@ -1,7 +1,6 @@
-using Lionholm.Core.DI;
 using UnityEngine;
 
-namespace Lionholm.Unity.DI
+namespace Lionholm.DI.Unity
 {
     public abstract class MonoTypeBinder : MonoBehaviour, ITypeBinder
     {

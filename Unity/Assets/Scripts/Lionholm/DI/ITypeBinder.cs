@@ -1,4 +1,4 @@
-namespace Lionholm.Core.DI
+namespace Lionholm.DI
 {
     public interface ITypeBinder
     {

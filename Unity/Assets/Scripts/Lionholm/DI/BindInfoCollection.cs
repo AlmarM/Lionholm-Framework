@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lionholm.Core;
 
-namespace Lionholm.Core.DI
+namespace Lionholm.DI
 {
     public class BindInfoCollection : WithdrawIterator<BindInfo>
     {
@@ -17,43 +18,11 @@ namespace Lionholm.Core.DI
             _lazyBindInfos = new List<BindInfo>();
         }
 
-        public bool HasBinding(Type targetType)
-        {
-            return _bindInfos.Any(bi => bi.TargetType == targetType) ||
-                   _lazyBindInfos.Any(bi => bi.TargetType == targetType);
-        }
+        public bool TryRemoveBinding(Type type, out BindInfo bindInfo) =>
+            TryRemoveBinding(HasType, type, out bindInfo);
 
-        public bool TryRemoveInstanceBinding(Type targetType, out BindInfo bindInfo)
-        {
-            bindInfo = _bindInfos.FirstOrDefault(bi => IsInstanceBind(bi) && bi.TargetType == targetType);
-            if (_bindInfos.Remove(bindInfo))
-            {
-                return true;
-            }
-
-            bindInfo = _lazyBindInfos.FirstOrDefault(bi => IsInstanceBind(bi) && bi.TargetType == targetType);
-            return _lazyBindInfos.Remove(bindInfo);
-        }
-
-        public bool TryRemoveBinding(Type targetType, out BindInfo bindInfo)
-        {
-            bindInfo = _bindInfos.FirstOrDefault(bi => bi.TargetType == targetType);
-            if (_bindInfos.Remove(bindInfo))
-            {
-                return true;
-            }
-
-            bindInfo = _lazyBindInfos.FirstOrDefault(bi => bi.TargetType == targetType);
-            return _lazyBindInfos.Remove(bindInfo);
-        }
-
-        public bool TryGetBinding(Type targetType, out BindInfo bindInfo)
-        {
-            bindInfo = _bindInfos.FirstOrDefault(bi => bi.TargetType == targetType) ??
-                       _lazyBindInfos.FirstOrDefault(bi => bi.TargetType == targetType);
-
-            return bindInfo != null;
-        }
+        public bool TryRemoveInstanceBinding(Type type, out BindInfo bindInfo) =>
+            TryRemoveBinding(HasInstanceType, type, out bindInfo);
 
         public BindInfo LazyAssignSelf(Type type) => LazyAssign(type).To(type);
 
@@ -95,9 +64,37 @@ namespace Lionholm.Core.DI
             return new BindInfo(targetType);
         }
 
+        private bool HasBinding(Type targetType)
+        {
+            return _bindInfos.Any(bi => bi.TargetType == targetType) ||
+                   _lazyBindInfos.Any(bi => bi.TargetType == targetType);
+        }
+
+        private bool TryRemoveBinding(Func<BindInfo, Type, bool> predicate, Type type, out BindInfo bindInfo)
+        {
+            bindInfo = _bindInfos.FirstOrDefault(bi => predicate(bi, type));
+            if (_bindInfos.Remove(bindInfo))
+            {
+                return true;
+            }
+
+            bindInfo = _lazyBindInfos.FirstOrDefault(bi => predicate(bi, type));
+            return _lazyBindInfos.Remove(bindInfo);
+        }
+
         public static bool IsInstanceBind(BindInfo info)
         {
             return info.InstanceType == InstanceType.NewInstance;
+        }
+
+        private static bool HasInstanceType(BindInfo bindInfo, Type type)
+        {
+            return IsInstanceBind(bindInfo) && HasType(bindInfo, type);
+        }
+
+        private static bool HasType(BindInfo bindInfo, Type type)
+        {
+            return bindInfo.SourceType == type || bindInfo.TargetType == type;
         }
     }
 }

@@ -2,40 +2,45 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Lionholm.Core;
 
-namespace Lionholm.Core.DI
+namespace Lionholm.DI
 {
     public class BindingInstanceFactory
     {
         private readonly DependencyInjector _dependencyInjector;
+        private readonly IList<Type> _currentConstructorTypes;
 
         public BindingInstanceFactory(DependencyInjector dependencyInjector)
         {
             _dependencyInjector = dependencyInjector;
+
+            _currentConstructorTypes = new List<Type>();
         }
 
         public object CreateInstance(Type targetType)
         {
-            return CreateInstanceRecursively(targetType, new List<Type>());
+            object instance = CreateInstanceImpl(targetType);
+
+            _currentConstructorTypes.Clear();
+
+            return instance;
         }
 
-        private object CreateInstanceRecursively(Type targetType, IList<Type> constructorTypes)
+        private object CreateInstanceImpl(Type targetType)
         {
             if (!TryFindConstructorDependency(targetType, out ConstructorInfo constructorInfo))
             {
                 throw new Exception();
             }
 
-            constructorTypes.Add(targetType);
+            _currentConstructorTypes.Add(targetType);
 
-            return CreateInstanceViaConstructor(constructorInfo, targetType, constructorTypes);
+            return CreateInstanceViaConstructor(constructorInfo, targetType);
         }
 
-        private object CreateInstanceViaConstructor(ConstructorInfo constructorInfo,
-            Type targetType,
-            IList<Type> constructorTypes)
+        private object CreateInstanceViaConstructor(ConstructorInfo constructorInfo, Type targetType)
         {
-            // TryFindConstructorDependency returns true with a null value when no constructor exists
             if (constructorInfo == null)
             {
                 return CreateConcreteInstance(targetType);
@@ -46,9 +51,11 @@ namespace Lionholm.Core.DI
             foreach (ParameterInfo parameterInfo in constructorInfo.GetParameters())
             {
                 Type parameterType = parameterInfo.ParameterType;
-                if (constructorTypes.Contains(parameterType))
+                if (_currentConstructorTypes.Contains(parameterType))
                 {
-                    throw new Exception();
+                    _currentConstructorTypes.Clear();
+
+                    throw new CircularDependencyException("");
                 }
 
                 object parameterInstance = _dependencyInjector.ResolveType(parameterType);
@@ -58,7 +65,7 @@ namespace Lionholm.Core.DI
             return CreateConcreteInstance(targetType, parameterObjects.ToArray());
         }
 
-        private bool TryFindConstructorDependency(Type type, out ConstructorInfo constructorInfo)
+        private static bool TryFindConstructorDependency(Type type, out ConstructorInfo constructorInfo)
         {
             constructorInfo = null;
 
@@ -72,9 +79,7 @@ namespace Lionholm.Core.DI
                     return true;
             }
 
-            ConstructorInfo markedConstructor = constructorInfos
-                .FirstOrDefault(ci => ci.GetCustomAttribute<ConstructorDependencyAttribute>() != null);
-
+            ConstructorInfo markedConstructor = constructorInfos.FirstOrDefault(HasConstructorDependency);
             if (markedConstructor == null)
             {
                 return false;
@@ -84,12 +89,17 @@ namespace Lionholm.Core.DI
             return true;
         }
 
-        private object CreateConcreteInstance(Type type)
+        private static bool HasConstructorDependency(ConstructorInfo constructorInfo)
+        {
+            return constructorInfo.GetCustomAttribute<ConstructorDependencyAttribute>() != null;
+        }
+
+        private static object CreateConcreteInstance(Type type)
         {
             return Activator.CreateInstance(type);
         }
 
-        private object CreateConcreteInstance(Type type, object[] args)
+        private static object CreateConcreteInstance(Type type, object[] args)
         {
             return Activator.CreateInstance(type, args);
         }

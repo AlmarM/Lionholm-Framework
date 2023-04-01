@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Lionholm.Core.Utils;
 
-namespace Lionholm.Core.DI
+namespace Lionholm.DI
 {
     public class DependencyInjector
     {
@@ -43,46 +44,62 @@ namespace Lionholm.Core.DI
             }
         }
 
-        public bool TryGetResolvedInstance(Type type, out object instance)
+        public T GetResolvedInstance<T>() => (T)GetResolvedInstance(typeof(T));
+
+        public object GetResolvedInstance(Type type)
         {
-            return _resolvedDependencies.TryGetValue(type, out instance);
+            return _resolvedDependencies.Values.First(o => o.GetType() == type);
         }
 
-        public object ResolveType<T>() where T : Type
+        public bool TryGetResolvedInstance<T>(out T instance)
         {
-            return ResolveType(typeof(T));
+            if (TryGetResolvedInstance(typeof(T), out object resolvedInstance))
+            {
+                instance = (T)resolvedInstance;
+                return true;
+            }
+
+            instance = default;
+            return false;
         }
 
         public object ResolveType(Type type)
         {
-            object instance;
-
-            if (TryGetResolvedInstance(type, out object resolvedInstance))
+            if (TryGetResolvedInstance(type, out object instance) ||
+                TryCreateNewInstanceType(type, out instance))
             {
-                instance = resolvedInstance;
-            }
-            else if (TryCreateNewInstanceType(type, out object newInstance))
-            {
-                instance = newInstance;
-            }
-            else if (_bindInfoCollection.TryRemoveBinding(type, out BindInfo bindInfo))
-            {
-                ResolveBinding(bindInfo);
-
-                instance = GetResolvedInstance(type);
-            }
-            else
-            {
-                AddConcreteBindInfo(type);
-                instance = ResolveType(type);
+                return instance;
             }
 
-            return instance;
+            if (!_bindInfoCollection.TryRemoveBinding(type, out BindInfo bindInfo))
+            {
+                throw new Exception();
+            }
+
+            ResolveBinding(bindInfo);
+
+            return GetResolvedInstanceFromSource(type);
         }
 
         public void SetDependencyInstance(Type sourceType, object instance)
         {
             _resolvedDependencies.Add(sourceType, instance);
+        }
+
+        private object GetResolvedInstanceFromSource(Type sourceType)
+        {
+            return _resolvedDependencies[sourceType];
+        }
+
+        private bool TryGetResolvedInstance(Type type, out object instance)
+        {
+            if (_resolvedDependencies.TryGetValue(type, out instance))
+            {
+                return true;
+            }
+
+            instance = _resolvedDependencies.Values.FirstOrDefault(o => o.GetType() == type);
+            return instance != null;
         }
 
         private void ResolveBinding(BindInfo bindInfo)
@@ -96,21 +113,11 @@ namespace Lionholm.Core.DI
             CreateAndInjectObject(bindInfo);
         }
 
-        private void AddConcreteBindInfo(Type concreteType)
-        {
-            _bindInfoCollection.AssignSelf(concreteType);
-        }
-
-        private object GetResolvedInstance(Type type)
-        {
-            return _resolvedDependencies[type];
-        }
-
         private bool TryCreateNewInstanceType(Type type, out object newInstance)
         {
-            if (HasInstanceBinding(type))
+            if (TryGetInstanceBinding(type, out BindInfo existingBindInfo))
             {
-                newInstance = CreateAndInjectObject(_instanceBinds[type]);
+                newInstance = CreateAndInjectObject(existingBindInfo);
                 return true;
             }
 
@@ -118,7 +125,7 @@ namespace Lionholm.Core.DI
             {
                 _instanceBinds.Add(instanceBindInfo.SourceType, instanceBindInfo);
 
-                newInstance = CreateAndInjectObject(_instanceBinds[type]);
+                newInstance = CreateAndInjectObject(instanceBindInfo);
                 return true;
             }
 
@@ -126,9 +133,22 @@ namespace Lionholm.Core.DI
             return false;
         }
 
-        private bool HasInstanceBinding(Type type)
+        private bool TryGetInstanceBinding(Type type, out BindInfo instanceBindInfo)
         {
-            return _instanceBinds.ContainsKey(type);
+            foreach (KeyValuePair<Type, BindInfo> instanceBind in _instanceBinds)
+            {
+                BindInfo bindInfo = instanceBind.Value;
+                if (bindInfo.SourceType != type && bindInfo.TargetType != type)
+                {
+                    continue;
+                }
+
+                instanceBindInfo = bindInfo;
+                return true;
+            }
+
+            instanceBindInfo = default;
+            return false;
         }
 
         private object CreateAndInjectObject(BindInfo bindInfo)

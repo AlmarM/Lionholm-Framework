@@ -1,4 +1,4 @@
-namespace Lionholm.Core.DI
+namespace Lionholm.DI
 {
     public abstract class TypeBinder<T> : ITypeBinder
         where T : TypeBinder<T>, new()

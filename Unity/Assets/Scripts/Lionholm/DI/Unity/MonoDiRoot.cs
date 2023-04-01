@@ -1,9 +1,8 @@
 using System;
 using System.Linq;
-using Lionholm.Core.DI;
 using UnityEngine;
 
-namespace Lionholm.Unity.DI
+namespace Lionholm.DI.Unity
 {
     public class MonoDiRoot : MonoBehaviour
     {
