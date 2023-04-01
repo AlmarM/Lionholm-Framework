@@ -1,4 +1,4 @@
-namespace Lionholm.Core.Serialization.Files
+namespace Lionholm.Serialization.Files
 {
     public interface IFileCompoundExporter : ICompoundExporter
     {

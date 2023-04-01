@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Lionholm.Core.Serialization.JSON
+namespace Lionholm.Serialization.JSON
 {
     /// <summary>
     /// Adds support for writing specific types to a Newtonsoft.Json JsonWriter.

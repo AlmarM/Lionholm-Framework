@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Lionholm.Core.Serialization.JSON
+namespace Lionholm.Serialization.JSON
 {
     public class JsonArrayReader : IJsonObjectReader
     {

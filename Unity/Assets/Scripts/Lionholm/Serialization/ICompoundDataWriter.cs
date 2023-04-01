@@ -1,4 +1,4 @@
-namespace Lionholm.Core.Serialization
+namespace Lionholm.Serialization
 {
     /// <summary>
     /// Interface for serializing a KeyValueCompound into a string.

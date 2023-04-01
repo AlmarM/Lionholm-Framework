@@ -6,7 +6,7 @@ using System.Text;
 using Lionholm.Core.Utils;
 using Newtonsoft.Json;
 
-namespace Lionholm.Core.Serialization.JSON
+namespace Lionholm.Serialization.JSON
 {
     /// <summary>
     /// Serialize a KeyValueCompound using Newtonsoft.Json.

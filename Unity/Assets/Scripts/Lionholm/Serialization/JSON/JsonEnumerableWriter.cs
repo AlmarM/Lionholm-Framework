@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using Newtonsoft.Json;
 
-namespace Lionholm.Core.Serialization.JSON
+namespace Lionholm.Serialization.JSON
 {
     public class JsonEnumerableWriter : IJsonObjectWriter
     {

@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Lionholm.Core.Serialization.JSON
+namespace Lionholm.Serialization.JSON
 {
     public class JsonPrimitiveReader : IJsonObjectReader
     {

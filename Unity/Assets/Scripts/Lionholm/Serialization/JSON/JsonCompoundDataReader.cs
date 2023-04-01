@@ -3,7 +3,7 @@ using System.Linq;
 using Lionholm.Core.Utils;
 using Newtonsoft.Json;
 
-namespace Lionholm.Core.Serialization.JSON
+namespace Lionholm.Serialization.JSON
 {
     /// <summary>
     /// Deserialize a json string to a KeyValueCompound using Newtonsoft.Json.

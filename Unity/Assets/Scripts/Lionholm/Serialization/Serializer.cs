@@ -1,4 +1,4 @@
-namespace Lionholm.Core.Serialization
+namespace Lionholm.Serialization
 {
     public class Serializer : ISerializer
     {

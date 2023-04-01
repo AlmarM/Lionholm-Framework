@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Lionholm.Core.Serialization.Files
+namespace Lionholm.Serialization.Files
 {
     public class FileCompoundExporter : IFileCompoundExporter
     {

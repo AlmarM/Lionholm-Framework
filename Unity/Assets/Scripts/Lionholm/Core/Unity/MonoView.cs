@@ -1,7 +1,6 @@
-using Lionholm.Core;
 using UnityEngine;
 
-namespace Lionholm.Unity
+namespace Lionholm.Core.Unity
 {
     public class MonoView<TModel> : MonoBehaviour, IMonoView
         where TModel : IModel

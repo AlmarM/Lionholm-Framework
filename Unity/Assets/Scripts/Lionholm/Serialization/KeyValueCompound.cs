@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Lionholm.Core.Serialization
+namespace Lionholm.Serialization
 {
     public class KeyValueCompound
     {
