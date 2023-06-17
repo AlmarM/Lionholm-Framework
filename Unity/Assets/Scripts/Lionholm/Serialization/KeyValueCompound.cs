@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace Lionholm.Serialization
 {
+    /// <summary>
+    /// Collection for key value pairs used for serialization.
+    /// </summary>
     public class KeyValueCompound
     {
         public IDictionary<string, object> Data { get; }
